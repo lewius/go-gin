@@ -1,4 +1,4 @@
 FROM golang:alpine
 
-ADD ./go-gin.exe
-ENTRYPOINT ["go-gin.exe"]
+ADD ./go-gin.exe app.exe
+ENTRYPOINT ["app.exe"]
