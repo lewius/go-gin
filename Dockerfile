@@ -1,4 +1,8 @@
 FROM golang:alpine
+MAINTAINER leyius "leyius@163.com"
 
-ADD ./go-gin.exe app.exe
-ENTRYPOINT ["app.exe"]
+#设置工作目录
+# WORKDIR /root
+
+ADD ./go-gin app
+ENTRYPOINT ["./app"]
