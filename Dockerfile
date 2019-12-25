@@ -8,6 +8,6 @@ RUN go build -o app
 
 FROM alpine:latest AS production
 WORKDIR /root/
-COPY --from=development $GOPATH/src/go-gin/app .
+COPY --from=development /go/src/go-gin/app .
 
 ENTRYPOINT ["./app"]
