@@ -22,7 +22,7 @@ type Product struct {
 }
 // GO没有类，只有结构体和结构方法
 func (Product) TableName() string {
-	return "pm_product"
+	return "product"
 }
 
 
@@ -39,7 +39,7 @@ func main() {
 	})
 
 	router.GET("/search", func(c *gin.Context) {
-		db, err := gorm.Open("postgres", "host=192.168.3.120 port=5432 user=pm dbname=pm password=aaaaaaaa sslmode=disable")
+		db, err := gorm.Open("postgres", "host=172.18.153.61 port=54321 user=postgres dbname=postgres password=postgres sslmode=disable")
 		if err != nil {
 			panic("failed to connect database")
 		}
