@@ -1,8 +1,9 @@
 FROM golang:alpine
 MAINTAINER leyius "leyius@163.com"
 
-#设置工作目录
-# WORKDIR /root
+# ENV GOPROXY https://goproxy.cn,direct
+WORKDIR $GOPATH/src/github.com/leyius/go-gin
+COPY . $GOPATH/src/github.com/leyius/go-gin
+# RUN go build .
 
-ADD ./go-gin app
-ENTRYPOINT ["./app"]
+ENTRYPOINT ["./go-gin"]

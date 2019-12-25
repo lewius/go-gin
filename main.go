@@ -20,6 +20,7 @@ type Product struct {
 	SupplierPn string
 	SupplierId int
 }
+// GO没有类，只有结构体和结构方法
 func (Product) TableName() string {
 	return "pm_product"
 }

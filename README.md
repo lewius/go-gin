@@ -13,3 +13,8 @@ golang web service by gin
 go get -v -t -d ./...
 
 go build .
+
+### go函数
+1. 不支持重载、默认参数
+2. 支持多返回值
+3. 函数名前的参数为“方法接收者”
