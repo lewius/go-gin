@@ -1,9 +1,13 @@
-FROM golang:alpine
+FROM golang:alpine AS development
 MAINTAINER leyius "leyius@163.com"
 
 # ENV GOPROXY https://goproxy.cn,direct
-WORKDIR $GOPATH/src/github.com/leyius/go-gin
-COPY . $GOPATH/src/github.com/leyius/go-gin
-RUN go build .
+WORKDIR $GOPATH/src/go-gin
+COPY . .
+RUN go build -o app
 
-ENTRYPOINT ["./go-gin"]
+FROM alpine:latest AS production
+WORKDIR /root/
+COPY --from=development $GOPATH/src/go-gin/app .
+
+ENTRYPOINT ["./app"]
