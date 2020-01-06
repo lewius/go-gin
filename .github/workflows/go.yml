@@ -27,7 +27,7 @@ jobs:
     # - name: Build
     #   run: go build -v .
 
-    - run: docker login -u leyius -p 4789612333
+    - run: docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }} 
     - run: docker build -t leyius/go-gin:master .
     - run: docker push leyius/go-gin:master
     - run: docker rmi leyius/go-gin:master
