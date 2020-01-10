@@ -4,13 +4,15 @@ import (
 	"fmt"
 	"time"
 	"strconv"
-	"github.com/gin-gonic/gin"
+	"strings"
 	// "net"
 	"net/http"
 	// "net/http/httputil"
 	// "net/url"
+	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"github.com/spf13/viper"
 )
 
 // gorm 字段映射 首字母需要大写
@@ -42,6 +44,59 @@ func (BloodPressure) TableName() string {
 	return "blood_pressure"
 }
 
+type Database struct {
+	host string
+	username string
+	dbname string
+	password string
+	port int
+}
+
+var database Database
+var db *gorm.DB
+func init() {
+	viper.SetConfigName("config")
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath("./conf/")
+
+	err := viper.ReadInConfig()
+	if err != nil {
+		panic("failed to read conf")
+	}
+	// 初始化数据库配置
+	host := viper.GetString("database.host")
+	port := viper.GetString("database.port")
+	username := viper.GetString("database.username")
+	dbname := viper.GetString("database.dbname")
+	password := viper.GetString("database.password")
+	fmt.Println("config init")
+	portInt, err := strconv.Atoi(port);
+	database = Database{
+		host: host,
+		port: portInt,
+		username: username,
+		dbname: dbname,
+		password: password,
+	}
+	fmt.Println(database)
+
+	dialect := GetGormDialect()
+	dbInstance, err := gorm.Open("postgres", dialect)
+	if err != nil {
+		panic("failed to connect database")
+	}
+	db = dbInstance
+}
+
+func GetGormDialect() string {
+	s := []string{"host=", database.host, 
+		" port=", strconv.Itoa(database.port),
+		" user=", database.username,
+		" dbname=", database.dbname,
+		" password=", database.password,
+		" sslmode=disable"}
+	return strings.Join(s, "")
+}
 
 func main() {
 	// fmt.Println("dbconnect：%s", err)
@@ -56,12 +111,9 @@ func main() {
 	})
 
 	router.GET("/search", func(c *gin.Context) {
-		db, err := gorm.Open("postgres", "host=172.18.153.61 port=54321 user=postgres dbname=postgres password=postgres sslmode=disable")
-		if err != nil {
-			panic("failed to connect database")
-		}
 		part := c.Query("part")
 		var products []Product
+
 		db.Where("pn = ? ", part).Find(&products)
 		if len(products) > 0 {
 			fmt.Printf("%+v\n", products[0])
@@ -82,10 +134,7 @@ func main() {
 	})
 
 	router.GET("/blood-pressure", func(c *gin.Context) {
-		db, err := gorm.Open("postgres", "host=172.18.153.61 port=54321 user=postgres dbname=postgres password=postgres sslmode=disable")
-		if err != nil {
-			panic("failed to connect database")
-		}
+
 		var records []BloodPressure
 		db.Find(&records)
 		if len(records) > 0 {
@@ -107,13 +156,14 @@ func main() {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		db, err := gorm.Open("postgres", "host=172.18.153.61 port=54321 user=postgres dbname=postgres password=postgres sslmode=disable")
-		if err != nil {
-			panic("failed to connect database")
-		}
 
 		// dp := strconv.Atoi(c.PostForm("dp"))
-		bloodPressure := BloodPressure{Dp: json.Dp, Sp: json.Sp, HeartRate: json.HeartRate, CreateTime: time.Now()}
+		bloodPressure := BloodPressure{
+			Dp: json.Dp,
+			Sp: json.Sp,
+			HeartRate: json.HeartRate,
+			CreateTime: time.Now(),
+		}
 		db.Create(&bloodPressure)
 		c.JSON(http.StatusOK, gin.H{
 			"status": 200,
