@@ -12,7 +12,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
-	// "github.com/spf13/viper"
+	"github.com/spf13/viper"
 )
 
 // gorm 字段映射 首字母需要大写
@@ -55,33 +55,28 @@ type Database struct {
 var database Database
 var db *gorm.DB
 func init() {
-	// viper.SetConfigName("config")
-	// viper.SetConfigType("yaml")
-	// viper.AddConfigPath("./conf/")
+	viper.SetConfigName("config")
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath("./conf/")
 
-	// err := viper.ReadInConfig()
-	// if err != nil {
-	// 	panic("failed to read conf")
-	// }
-	// // 初始化数据库配置
-	// host := viper.GetString("database.host")
-	// port := viper.GetString("database.port")
-	// username := viper.GetString("database.username")
-	// dbname := viper.GetString("database.dbname")
-	// password := viper.GetString("database.password")
-	// fmt.Println("config init")
-	// portInt, err := strconv.Atoi(port);
+	err := viper.ReadInConfig()
+	if err != nil {
+		panic("failed to read conf")
+	}
+	// 初始化数据库配置
+	host := viper.GetString("database.host")
+	port := viper.GetString("database.port")
+	username := viper.GetString("database.username")
+	dbname := viper.GetString("database.dbname")
+	password := viper.GetString("database.password")
+	fmt.Println("config init")
+	portInt, err := strconv.Atoi(port);
 	database = Database{
-		host: "172.18.153.61",
-		port: 54321,
-		username: "postgres",
-		dbname: "postgres",
-		password: "postgres",
-		// host: host,
-		// port: portInt,
-		// username: username,
-		// dbname: dbname,
-		// password: password,
+		host: host,
+		port: portInt,
+		username: username,
+		dbname: dbname,
+		password: password,
 	}
 	fmt.Println(database)
 
